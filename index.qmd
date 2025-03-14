@@ -1,0 +1,6 @@
+---
+title: "index"
+format: html
+---
+
+https://github.com/nkltsh002/Practical-Submission

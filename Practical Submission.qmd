@@ -1,12 +1,40 @@
 ---
-title: "Practical Submission"
+title: "Parallel Computing Prac Solutions"
+author: "Tshwanelo Nkalanga"
+format: html
 ---
-```{r}
-if (!requireNamespace("remotes", quietly = TRUE)) {
-  install.packages("remotes")
-}
-remotes::install_github("MiguelRodo/projrsimple")
 
-projrsimple::projr_init()
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+
+library(foreach)
+library(doParallel)
+library(iterators)
+library(MASS)
+library(parallel)
+library(iterators)
+library(doParallel)
 ```
 
+## Question 1: Exponential Distribution Simulation
+
+```{r}
+
+num_simulations <- 100
+set.seed(123)
+
+results <- foreach(i = 1:num_simulations, .combine = rbind) %do% {
+    sample_data <- rexp(100, rate = 1)
+    c(mean(sample_data), var(sample_data))
+}
+
+results_df <- data.frame(
+    Observation = paste("Simulation", 1:num_simulations),
+    Mean = results[,1],
+    Variance = results[,2]
+)
+
+knitr::kable(head(results_df), digits = 4, caption = "First 6 Simulation Results")
+```

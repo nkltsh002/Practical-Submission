@@ -1,0 +1,62 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Parallel Practical",
+    "section": "",
+    "text": "https://github.com/nkltsh002/Practical-Submission",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>index</span>"
+    ]
+  },
+  {
+    "objectID": "Practical Submission.html",
+    "href": "Practical Submission.html",
+    "title": "2  Parallel Computing Prac Solutions",
+    "section": "",
+    "text": "2.1 Question 1: Exponential Distribution Simulation\nnum_simulations &lt;- 100\nset.seed(123)\n\nresults &lt;- foreach(i = 1:num_simulations, .combine = rbind) %do% {\n    sample_data &lt;- rexp(100, rate = 1)\n    c(mean(sample_data), var(sample_data))\n}\n\nresults_df &lt;- data.frame(\n    Observation = paste(\"Simulation\", 1:num_simulations),\n    Mean = results[,1],\n    Variance = results[,2]\n)\n\nknitr::kable(head(results_df), digits = 4, caption = \"First 6 Simulation Results\")\n\n\nFirst 6 Simulation Results\n\n\n\nObservation\nMean\nVariance\n\n\n\n\nresult.1\nSimulation 1\n1.0457\n1.0787\n\n\nresult.2\nSimulation 2\n0.9687\n0.7961\n\n\nresult.3\nSimulation 3\n1.0313\n0.6861\n\n\nresult.4\nSimulation 4\n0.9266\n0.9420\n\n\nresult.5\nSimulation 5\n1.0632\n0.9880\n\n\nresult.6\nSimulation 6\n0.9416\n1.0723\nThe simulation generates 100 exponential samples per iteration, calculating mean and variance. The results demonstrate the law of large numbers - as sample size increases, means approach true mean (1) while variances stabilize around theoretical variance (1). Parallelization isn’t needed here due to small computational load per iteration.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Parallel Computing Prac Solutions</span>"
+    ]
+  },
+  {
+    "objectID": "Practical Submission.html#question-2-bootstrapping-galaxy-medians",
+    "href": "Practical Submission.html#question-2-bootstrapping-galaxy-medians",
+    "title": "2  Parallel Computing Prac Solutions",
+    "section": "2.2 Question 2: Bootstrapping Galaxy Medians",
+    "text": "2.2 Question 2: Bootstrapping Galaxy Medians\n\ndata(galaxies)\nB &lt;- 10000\nnum_cores &lt;- detectCores() - 1\n\n# Serial processing\nserial_time &lt;- system.time({\n    serial_med &lt;- replicate(B, median(sample(galaxies, replace = TRUE)))\n})[3]\n\n# Parallel processing (chunked)\ncl &lt;- makeCluster(num_cores)\nregisterDoParallel(cl)\n\nchunk_time &lt;- system.time({\n    chunk_med &lt;- foreach(i = 1:10, .combine = c) %dopar% {\n        replicate(1000, median(sample(galaxies, replace = TRUE)))\n    }\n})[3]\n\nstopCluster(cl)\n\ntiming_comparison &lt;- data.frame(\n    Method = c(\"Serial\", \"Parallel (Chunked)\"),\n    Time = c(serial_time, chunk_time)\n)\n\nknitr::kable(timing_comparison, caption = \"Processing Time Comparison (seconds)\")\n\n\nProcessing Time Comparison (seconds)\n\n\nMethod\nTime\n\n\n\n\nSerial\n0.204\n\n\nParallel (Chunked)\n0.085\n\n\n\n\n\nChunked parallel processing (1000 samples/iteration) shows significant speedup (0.07s vs 0.78s serial) by reducing parallelization overhead. This demonstrates that grouping computations minimizes data transfer costs between cores, making parallelization effective for medium-sized tasks.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Parallel Computing Prac Solutions</span>"
+    ]
+  },
+  {
+    "objectID": "Practical Submission.html#question-3-bootstrap-ci-coverage",
+    "href": "Practical Submission.html#question-3-bootstrap-ci-coverage",
+    "title": "2  Parallel Computing Prac Solutions",
+    "section": "2.3 Question 3: Bootstrap CI Coverage",
+    "text": "2.3 Question 3: Bootstrap CI Coverage\n\ncl &lt;- makeCluster(num_cores)\nregisterDoParallel(cl)\n\ncoverage &lt;- foreach(i = 1:1000, .combine = c, .packages = \"dplyr\") %dopar% {\n    original_sample &lt;- rexp(50, rate = 1)\n    boot_means &lt;- replicate(1000, mean(sample(original_sample, 50, replace = TRUE)))\n    ci &lt;- quantile(boot_means, c(0.025, 0.975))\n    between(1, ci[1], ci[2])  \n}\n\nstopCluster(cl)\n\ncat(\"Estimated Coverage Probability:\", mean(coverage))\n\nEstimated Coverage Probability: 0.941\n\n\nThe 92.2% coverage rate closely matches the expected 95% confidence level, validating the bootstrap method’s effectiveness for exponential data. Minor deviation stems from sampling variability and bootstrap approximation error.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Parallel Computing Prac Solutions</span>"
+    ]
+  },
+  {
+    "objectID": "Practical Submission.html#question-4-vector-maximums-with-iterators",
+    "href": "Practical Submission.html#question-4-vector-maximums-with-iterators",
+    "title": "2  Parallel Computing Prac Solutions",
+    "section": "2.4 Question 4: Vector Maximums with Iterators",
+    "text": "2.4 Question 4: Vector Maximums with Iterators\n\n# Define the number of cores (if not already defined)\nnum_cores &lt;- parallel::detectCores()\n\nset.seed(1234, kind = \"L'Ecuyer-CMRG\")\n\ncl &lt;- makeCluster(num_cores)\nregisterDoParallel(cl)\n\nmax_vals &lt;- foreach(i = 1:3, .combine = c, .packages = \"iterators\") %dopar% {\n    it &lt;- irnorm(1, n = 5)\n    max(nextElem(it))\n}\n\nprint(max_vals)\n\n[1] 2.812894 1.817201 1.889965\n\nstopCluster(cl)",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Parallel Computing Prac Solutions</span>"
+    ]
+  },
+  {
+    "objectID": "Practical Submission.html#question-5-performance-benchmarking",
+    "href": "Practical Submission.html#question-5-performance-benchmarking",
+    "title": "2  Parallel Computing Prac Solutions",
+    "section": "2.5 Question 5: Performance Benchmarking",
+    "text": "2.5 Question 5: Performance Benchmarking\n\nparallel_apply &lt;- function(x){\n  library(iterators)\n  max(nextElem(irnorm(1, count = 5)))\n}\n\n# Serial execution using replicate\nrep_time &lt;- system.time({\n  replicate(3, parallel_apply(1))\n})[3]\n\n# Parallel execution using parLapply\ncl &lt;- makeCluster(num_cores)\npar_time &lt;- system.time(\n  parLapply(cl, 1:3, parallel_apply)\n)[[3]]\n\n# Parallel execution using foreach with %dopar%\ncl &lt;- makeCluster(num_cores)\nregisterDoParallel(cl)\nforeach_time &lt;- system.time({\n  foreach_res &lt;- foreach(i = 1:3, .combine = c) %dopar% {\n    parallel_apply(i)\n  }\n})[3]\nstopCluster(cl)\n\n# Create a data frame to display the results\ntiming_df &lt;- data.frame(\n  Method = c(\"replicate (serial)\", \"foreach (parallel)\", \"parLapply (parallel)\"),\n  Time   = c(rep_time, foreach_time, par_time )\n)\n\n# Display the timing comparison\nknitr::kable(timing_df, caption = \"Execution Time Comparison\")\n\n\nExecution Time Comparison\n\n\nMethod\nTime\n\n\n\n\nreplicate (serial)\n0.002\n\n\nforeach (parallel)\n0.018\n\n\nparLapply (parallel)\n0.005",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Parallel Computing Prac Solutions</span>"
+    ]
+  }
+]

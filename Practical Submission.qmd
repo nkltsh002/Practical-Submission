@@ -160,3 +160,5 @@ timing_df <- data.frame(
 # Display the timing comparison
 knitr::kable(timing_df, caption = "Execution Time Comparison")
 ```
+
+Serial execution outperforms parallel methods for trivial tasks due to parallelization overhead. This emphasizes that parallel computing only benefits computationally intensive tasks where per-iteration costs outweigh management overhead.

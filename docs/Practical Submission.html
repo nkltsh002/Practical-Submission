@@ -312,11 +312,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">Serial</td>
-<td style="text-align: right;">0.204</td>
+<td style="text-align: right;">0.191</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Parallel (Chunked)</td>
-<td style="text-align: right;">0.085</td>
+<td style="text-align: right;">0.079</td>
 </tr>
 </tbody>
 </table>
@@ -341,7 +341,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Estimated Coverage Probability:"</span>, <span class="fu">mean</span>(coverage))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Estimated Coverage Probability: 0.941</code></pre>
+<pre><code>Estimated Coverage Probability: 0.931</code></pre>
 </div>
 </div>
 <p>The 92.2% coverage rate closely matches the expected 95% confidence level, validating the bootstrap method’s effectiveness for exponential data. Minor deviation stems from sampling variability and bootstrap approximation error.</p>
@@ -364,7 +364,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(max_vals)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 2.812894 1.817201 1.889965</code></pre>
+<pre><code>[1] 2.020310 2.449066 2.301493</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">stopCluster</span>(cl)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
@@ -418,11 +418,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">replicate (serial)</td>
-<td style="text-align: right;">0.002</td>
+<td style="text-align: right;">0.001</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">foreach (parallel)</td>
-<td style="text-align: right;">0.018</td>
+<td style="text-align: right;">0.019</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">parLapply (parallel)</td>
@@ -432,6 +432,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </table>
 </div>
 </div>
+<p>Serial execution outperforms parallel methods for trivial tasks due to parallelization overhead. This emphasizes that parallel computing only benefits computationally intensive tasks where per-iteration costs outweigh management overhead.</p>
 
 
 </section>

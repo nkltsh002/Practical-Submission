@@ -1,6 +1,7 @@
 ---
 title: "Practical Submission"
 ---
+
 ```{r}
 if (!requireNamespace("remotes", quietly = TRUE)) {
   install.packages("remotes")

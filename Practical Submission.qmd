@@ -95,3 +95,68 @@ cat("Estimated Coverage Probability:", mean(coverage))
 ```
 
 The 92.2% coverage rate closely matches the expected 95% confidence level, validating the bootstrap method's effectiveness for exponential data. Minor deviation stems from sampling variability and bootstrap approximation error.
+
+## Question 4: Vector Maximums with Iterators
+
+```{r}
+#| warning: false
+#| message: false
+
+# Define the number of cores (if not already defined)
+num_cores <- parallel::detectCores()
+
+set.seed(1234, kind = "L'Ecuyer-CMRG")
+
+cl <- makeCluster(num_cores)
+registerDoParallel(cl)
+
+max_vals <- foreach(i = 1:3, .combine = c, .packages = "iterators") %dopar% {
+    it <- irnorm(1, n = 5)
+    max(nextElem(it))
+}
+
+print(max_vals)
+stopCluster(cl)
+```
+
+## Question 5: Performance Benchmarking
+
+```{r}
+#| warning: false
+#| message: false
+
+parallel_apply <- function(x){
+  library(iterators)
+  max(nextElem(irnorm(1, count = 5)))
+}
+
+# Serial execution using replicate
+rep_time <- system.time({
+  replicate(3, parallel_apply(1))
+})[3]
+
+# Parallel execution using parLapply
+cl <- makeCluster(num_cores)
+par_time <- system.time(
+  parLapply(cl, 1:3, parallel_apply)
+)[[3]]
+
+# Parallel execution using foreach with %dopar%
+cl <- makeCluster(num_cores)
+registerDoParallel(cl)
+foreach_time <- system.time({
+  foreach_res <- foreach(i = 1:3, .combine = c) %dopar% {
+    parallel_apply(i)
+  }
+})[3]
+stopCluster(cl)
+
+# Create a data frame to display the results
+timing_df <- data.frame(
+  Method = c("replicate (serial)", "foreach (parallel)", "parLapply (parallel)"),
+  Time   = c(rep_time, foreach_time, par_time )
+)
+
+# Display the timing comparison
+knitr::kable(timing_df, caption = "Execution Time Comparison")
+```
